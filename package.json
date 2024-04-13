@@ -1,0 +1,8 @@
+{
+  "name": "mid",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/dola1210/Network_AD_mid.git",
+  "author": "dola1210 <dola1210@gmail.com>",
+  "license": "MIT"
+}
