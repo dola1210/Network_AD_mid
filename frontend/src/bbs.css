@@ -1,0 +1,12 @@
+.Bbs {
+  display: grid;
+  place-items: center; 
+  min-height: 100%;
+  padding-bottom: 50px; 
+}
+
+form button {
+  display: block; 
+  margin: 0 auto; 
+}
+
