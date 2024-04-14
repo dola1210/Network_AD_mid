@@ -2,12 +2,12 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './Navbar/Navbar.jsx';
 import Home from './Page/Home.jsx';
 import About from './Page/About.jsx';
 import Users from './Page/Users.jsx';
-import CreateUser from './Page/CreateUser';
+import CreateUser from './Page/CreateUser.jsx';
 import './App.css'
 
 function App() {
@@ -18,6 +18,7 @@ function App() {
       <div className="App">
         <Navbar /> {/* 導航欄 */}
         <Routes>
+          <Route path="/" element={<Navigate replace to="/home" />} />
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/users" element={<Users />} />

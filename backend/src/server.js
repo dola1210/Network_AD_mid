@@ -38,13 +38,14 @@ app.get('/createuser', function (req, res) {
     // res.send('User page')
 })
 
-app.use(express.text({ type: 'text/plain' }));
+app.use(express.json());
 app.post('/createuser', (req, res) => {
     res.sendFile(path.join(frontendDir, 'index.html'));
     console.log(req.body);
 
     const filePath = path.join(__dirname, 'data.json');
-    const newData = req.body;
+    const key = req.body.name;  // 使用data的值作为键
+    const newData = { [key]: req.body.pwd };
 
     // Read in Json
     fs.readFile(filePath, 'utf8', (err, data) => {

@@ -1,22 +1,30 @@
-.navbar {
+nav {
   display: flex;
-  align-items: center;
+  justify-content: center; /* 這行代碼將 nav 的子元素居中 */
   position: fixed;
   top: 0;
   left: 0;
-  height: 7%;
-  width: 100%;
-  z-index: 1000;
   background-color: #333;
-  font-size: large;
+  width: 100%; /* 確保 nav 元素佔滿整個容器的寬度 */
 }
 
-.navbar-links a {
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex; /* 啟用 flexbox 以更好地控制內部列表項的布局 */
+  padding-left: 0; /* 移除默認的左填充，這在某些瀏覽器中可能會影響布局 */
+}
+
+nav ul li a {
+  display: block;
   color: white;
+  text-align: center;
+  padding: 3% 100px;
   text-decoration: none;
-  padding: 0.5rem 1rem;
 }
 
-.navbar-links a:hover {
-  background-color: #555;
+nav ul li a:hover {
+  background-color: #111;
 }

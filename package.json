@@ -1,13 +1,13 @@
 {
-  "name": "lab05",
+  "name": "mid",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/Lucashien/ADNS_lab5.git",
-  "author": "lucashien <lucas641212@gmail.com>",
+  "repository": "https://github.com/dola1210/Network_AD_mid.git",
+  "author": "dola1210 <dola1210@gmail.com>",
   "license": "MIT",
   "scripts": {
     "start": "cd backend && yarn start",
     "build": "cd frontend && yarn build",
-    "install:all": "cd frontend && yarn install - production=false && cd ../backend && yarn"
+    "install:all": "cd frontend && yarn install --production=false && cd ../backend && yarn"
   }
 }
