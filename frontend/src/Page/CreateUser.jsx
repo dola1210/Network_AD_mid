@@ -16,10 +16,20 @@ const CreateUser = () => {
 
   const handleSubmit = () => {
     if (inputName != "" & inputPwd != "") {
-      sendData(inputName, inputPwd);
-      setMessage(`${inputName} 註冊成功！`);
-      setinputName('');
-      setinputPwd('');
+      sendData(inputName, inputPwd)
+        .then(dataString => {
+          if(dataString === 'same'){
+            setMessage(`此帳號已存在`)
+          }
+          else if(dataString === 'success'){
+            setMessage(`${inputName} 註冊成功！`)
+            setinputName('');
+            setinputPwd('');
+          }
+          else 
+            setMessage(`註冊失敗！`)
+        })
+        .catch(error => console.error(error));
     }
   };
 
@@ -58,20 +68,25 @@ function sendData(data1, data2) {
     name: data1,
     pwd: data2
   };
-  fetch('/createuser', {
-    method: 'POST', // 或 'PUT'
+  return fetch('/createuser', {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload)
   })
-  .then(response => response.json())
-    .then(data => {
-      console.log('Success:', data);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+  .then(response => {
+    if (!response.ok) {
+      setMessage('註冊失敗');
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.text();  // 修改这里以获取文本响应
+  })
+  .catch((error) => {
+    setMessage('註冊失敗');
+    console.error('Error:', error);
+  });
 }
+
 
 export default CreateUser;
