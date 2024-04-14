@@ -8,6 +8,8 @@ import Home from './Page/Home.jsx';
 import About from './Page/About.jsx';
 import Users from './Page/Users.jsx';
 import CreateUser from './Page/CreateUser.jsx';
+import Login from './Page/login.jsx';
+import Logout from './Page/logout.jsx';
 import './App.css'
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/users" element={<Users />} />
           <Route path="/createuser" element={<CreateUser />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
         <header className="App-header">
         </header>

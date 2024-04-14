@@ -1,7 +1,7 @@
 // Home.jsx
 import React, { useState } from 'react';
 
-const CreateUser = () => {
+const Login = () => {
   const [inputName, setinputName] = useState('');
   const [inputPwd, setinputPwd] = useState('');
   const [message, setMessage] = useState('');
@@ -18,16 +18,16 @@ const CreateUser = () => {
     if (inputName != "" & inputPwd != "") {
       sendData(inputName, inputPwd)
         .then(dataString => {
-          if(dataString === 'same'){
-            setMessage(`此帳號已存在`)
+          if(dataString === 'loginfai'){
+            setMessage(`登入失敗`)
           }
-          else if(dataString === 'success'){
-            setMessage(`${inputName} 註冊成功！`)
+          else if(dataString === 'loginsus'){
+            setMessage(`${inputName} 登入成功！`)
             setinputName('');
             setinputPwd('');
           }
           else 
-            setMessage(`註冊失敗！`)
+            setMessage(`登入失敗！`)
         })
         .catch(error => console.error(error));
     }
@@ -35,7 +35,7 @@ const CreateUser = () => {
 
   return (
     <div>
-      <h2>Sign up your own account!</h2>
+      <h2>Log in your own account!</h2>
       <br></br>
       
       <input
@@ -68,7 +68,7 @@ function sendData(data1, data2) {
     name: data1,
     pwd: data2
   };
-  return fetch('/createuser', {
+  return fetch('/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -77,16 +77,16 @@ function sendData(data1, data2) {
   })
   .then(response => {
     if (!response.ok) {
-      setMessage('註冊失敗');
+      setMessage('登入失敗');
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.text();  // 修改这里以获取文本响应
   })
   .catch((error) => {
-    setMessage('註冊失敗');
+    setMessage('登入失敗');
     console.error('Error:', error);
   });
 }
 
 
-export default CreateUser;
+export default Login;

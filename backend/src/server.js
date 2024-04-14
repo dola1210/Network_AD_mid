@@ -1,4 +1,6 @@
 import express from "express";
+import session from "express-session";
+import cookieParser from "cookie-parser";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import fs from 'fs';
@@ -10,10 +12,34 @@ const frontendDir = path.join(__dirname, "../../frontend/dist");
 
 app.use(express.static(frontendDir))
 
+if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+}
+app.use(
+    session({
+        cookie: {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: null, // session cookie
+        },
+        // use random secret
+        name: 'user', // don't omit this option
+        secret: 'rklsjdjlkewiour129bmnmbn21kjgkja09dsf',
+        resave: false,
+        saveUninitialized: false,
+    })
+);
+
 // 主頁路由
-app.get('/', (req, res) => {
-    res.sendFile(path.join(frontendDir, 'index.html'));
-});
+// app.get('/', (req, res) => {
+//     console.log(req.session)
+//     // console.log(req.sessionID)
+//     // if (req.session.user) {
+//     //     return res.redirect('/home')
+//     // }
+//     res.sendFile(path.join(frontendDir, 'index.html'));
+// });
 
 app.get('/home', function (req, res) {
     res.sendFile(path.join(frontendDir, 'index.html'));
@@ -21,7 +47,7 @@ app.get('/home', function (req, res) {
 
 app.get('/about', function (req, res) {
     res.sendFile(path.join(frontendDir, 'index.html'));
-    console.log("into about page")
+    // console.log("into about page")
 })
 
 app.get('/users', function (req, res) {
@@ -38,6 +64,28 @@ app.get('/createuser', function (req, res) {
     // res.send('User page')
 })
 
+app.get('/login', function (req, res) {
+    res.sendFile(path.join(frontendDir, 'index.html'));
+    // res.send('User page')
+})
+
+app.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        console.log('session destroyed')
+    })
+    res.sendFile(path.join(frontendDir, 'index.html'));
+})
+
+app.get('/api/check', function (req, res) {
+    const userName = req.session.user;
+    console.log(userName);
+    if (req.session.user) {
+        res.send(userName);
+    }
+    else
+        res.send('');
+});
+
 app.use(express.json());
 const handleError = (err, res) => {
     console.error(err);
@@ -48,8 +96,6 @@ const handleError = (err, res) => {
 
 app.post('/createuser', (req, res) => {
     const filePath = path.join(__dirname, 'data.json');
-    // const key = req.body.name;
-    // const newData = [{ [key]: req.body.pwd }];
     const newData = req.body;
 
     fs.readFile(filePath, 'utf8', (err, data) => {
@@ -79,7 +125,7 @@ app.post('/createuser', (req, res) => {
                     if (err) {
                         handleError(err, res);
                     } else {
-                        console.log('The file has been updated!');
+                        console.log(`${newData.name} register`);
                         res.send('success');
                     }
                 });
@@ -88,6 +134,39 @@ app.post('/createuser', (req, res) => {
         }
     });
 });
+
+// app.use(cookieParser());
+
+app.post('/login', (req, res) => {
+    
+    const logData = req.body;
+    console.log('log:', logData)
+
+    const filePath = path.join(__dirname, 'data.json');
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            res.send('loginfai');
+        }
+        else {
+            const fileData = JSON.parse(data);
+            const result = fileData.find(item => item.name === logData.name);
+            if (result) {
+                console.log('res:', result);  // 如果找到，输出该项
+                if(result.pwd === logData.pwd){
+                    req.session.user = logData.name;
+                    res.send('loginsus');
+                }
+                else
+                    res.send('loginfai');
+            } 
+            else {
+                res.send('loginfai');
+            }
+        }
+    });
+  
+  })
+
 
 
 app.listen(port, () => {
