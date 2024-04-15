@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import OpenAI from "openai";
 import axios from "axios";
 import session from "express-session";
 import cookieParser from "cookie-parser";
@@ -35,7 +36,6 @@ app.use(
     })
 );
 
-// 主頁路由
 // app.get('/', (req, res) => {
 //     console.log(req.session)
 //     // console.log(req.sessionID)
@@ -50,6 +50,11 @@ app.get('/home', function (req, res) {
 })
 
 app.get('/Msgboard', function (req, res) {
+    res.sendFile(path.join(frontendDir, 'index.html'));
+    // console.log("into about page")
+})
+
+app.get('/GenImg', function (req, res) {
     res.sendFile(path.join(frontendDir, 'index.html'));
     // console.log("into about page")
 })
@@ -262,8 +267,7 @@ app.get('/api/msgs', function (req, res) {
     res.sendFile(path.join(__dirname, 'data.json'));
 });
 
-const id = '546c25a59c58ad7'; // 填入 App 的 Client ID
-const token = '193bb511d18059efc4abb89d135ef8aac2f85094'; // 填入 token
+const id = env("cl_id"); // 填入 App 的 Client ID
 const upload = multer({ storage: multer.memoryStorage() });
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     if (!req.file) {
@@ -299,6 +303,29 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     } catch (error) {
         console.error('Failed to upload image to Imgur:', error);
         res.status(500).send('Failed to upload image to Imgur.');
+    }
+});
+
+
+const openai = new OpenAI({
+    apiKey: env("api_Key"),
+});
+app.post('/api/GenImg', async (req, res) => {
+    if (!req.session.user) {
+        res.send('loginfai');
+        return;
+    }
+    try{
+        const gen = await openai.images.generate({
+            prompt: req.body.des,
+            n: 1,
+            size: "256x256",
+        });
+        res.send(gen.data[0].url);
+    }
+    catch (error) {
+        console.error('Error:', error);
+        res.send('');
     }
 });
 

@@ -10,6 +10,7 @@ import Users from './Page/Users.jsx';
 import CreateUser from './Page/CreateUser.jsx';
 import Login from './Page/login.jsx';
 import Logout from './Page/logout.jsx';
+import GenImg from './Page/GenImg.jsx';
 import './App.css'
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/createuser" element={<CreateUser />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/GenImg" element={<GenImg />} />
         </Routes>
         <header className="App-header">
         </header>
