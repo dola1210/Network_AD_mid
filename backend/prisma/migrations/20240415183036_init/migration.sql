@@ -1,7 +1,8 @@
 -- CreateTable
 CREATE TABLE "User" (
     "name" TEXT NOT NULL,
-    "pwd" TEXT NOT NULL
+    "pwd" TEXT NOT NULL,
+    "photo" TEXT NOT NULL
 );
 
 -- CreateIndex

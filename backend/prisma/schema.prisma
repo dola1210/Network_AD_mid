@@ -16,4 +16,5 @@ datasource db {
 model User {
   name String @unique
   pwd String
+  photo String
 }

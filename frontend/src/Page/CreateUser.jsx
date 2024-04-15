@@ -31,7 +31,6 @@ const CreateUser = () => {
     <div>
       <h2>Sign up your own account!</h2>
       <br></br>
-      
       <input
         type="text"
         value={inputName}

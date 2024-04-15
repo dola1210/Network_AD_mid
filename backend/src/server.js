@@ -1,4 +1,6 @@
 import express from "express";
+import multer from "multer";
+import axios from "axios";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import path, { dirname } from "path";
@@ -74,14 +76,24 @@ app.get('/logout', (req, res) => {
     res.sendFile(path.join(frontendDir, 'index.html'));
 })
 
-app.get('/api/check', function (req, res) {
+app.get('/api/check', async function (req, res) {
     const userName = req.session.user;
     console.log(userName);
     if (req.session.user) {
-        res.send(userName);
+        // res.send(userName);
+        const user = await prisma.user.findUnique({
+            where: {
+                name: userName,
+            },
+        });
+        if(user){
+            res.json(user);
+        }    
+        else
+            res.json([]);
     }
     else
-        res.send('');
+        res.json([]);
 });
 
 app.use(express.json());
@@ -162,20 +174,18 @@ app.use(express.json());
 //             }
 //         }
 //     });
-  
 //   })
 
 app.post('/createuser2', async (req, res) => {
     console.log('logggg:', req.body)
     
     try {
-        const user = await prisma.user.create({ data: { name: req.body.name, pwd: bcrypt.hashSync(req.body.pwd, 13)} });
+        const user = await prisma.user.create({ data: { name: req.body.name, pwd: bcrypt.hashSync(req.body.pwd, 13), photo: 'https://i.imgur.com/DCdf5yU.png'} });
         return res.send('success');
     } catch (error) {
         console.error('Error create user');
         return res.send('fail');
     }
-    
 })
 
 app.post('/login2', async (req, res) => {
@@ -204,6 +214,93 @@ app.post('/login2', async (req, res) => {
         console.error('Error login user');
     }
 })
+
+const messagesFile = path.join(__dirname, 'data.json');
+app.post('/api/messages', async (req, res) => {
+    const us = await prisma.user.findUnique({
+        where: {
+            name: req.body.name,
+        },
+    });
+    const newMessage = {
+        id: 1,
+        name: req.body.name, // 使用从props或上下文获取的用户名
+        text: req.body.text, 
+        photo: us.photo
+    };
+    fs.readFile(messagesFile, (err, data) => {
+        if (err && err.code === 'ENOENT') {
+            // 文件不存在，创建新文件
+            fs.writeFile(messagesFile, JSON.stringify([newMessage]), (err) => {
+                if (err) {
+                    res.status(500).send('Error writing new message');
+                } else {
+                    res.json([newMessage]);
+                }
+            });
+        } else if (err) {
+            res.status(500).send('Error reading messages file');
+        } else {
+            const messages = JSON.parse(data);
+            if(messages.length > 0)
+                newMessage.id = messages[messages.length - 1].id+1;
+            messages.push(newMessage);
+            if(messages.length > 20)
+                messages.shift();
+            fs.writeFile(messagesFile, JSON.stringify(messages), (err) => {
+                if (err) {
+                    res.status(500).send('Error updating messages file');
+                } else {
+                    res.json(messages);
+                }
+            });
+        }
+    });
+});
+
+app.get('/api/msgs', function (req, res) {
+    res.sendFile(path.join(__dirname, 'data.json'));
+});
+
+const id = '546c25a59c58ad7'; // 填入 App 的 Client ID
+const token = '193bb511d18059efc4abb89d135ef8aac2f85094'; // 填入 token
+const upload = multer({ storage: multer.memoryStorage() });
+app.post('/api/upload', upload.single('image'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+
+    try {
+        const imgurResponse = await axios({
+            method: 'post',
+            url: 'https://api.imgur.com/3/image',
+            headers: {
+                'Authorization': `Client-ID ${id}`, // 替换成你的Client ID
+                'Content-Type': 'multipart/form-data'
+            },
+            data: {
+                image: req.file.buffer.toString('base64')
+            }
+        });
+        console.log(imgurResponse.data.data.link);
+        
+        const user = await prisma.user.update({
+            where: {
+              name: req.body.name,
+            },
+            data: {
+                photo: imgurResponse.data.data.link  
+            }
+        });
+
+        res.send({
+            message: 'Image uploaded to Imgur successfully!',
+        });
+    } catch (error) {
+        console.error('Failed to upload image to Imgur:', error);
+        res.status(500).send('Failed to upload image to Imgur.');
+    }
+});
 
 
 app.listen(port, () => {
