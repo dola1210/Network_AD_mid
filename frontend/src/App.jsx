@@ -5,7 +5,7 @@ import viteLogo from '/vite.svg'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './Navbar/Navbar.jsx';
 import Home from './Page/Home.jsx';
-import About from './Page/About.jsx';
+import Msgboard from './Page/Msgboard.jsx';
 import Users from './Page/Users.jsx';
 import CreateUser from './Page/CreateUser.jsx';
 import Login from './Page/login.jsx';
@@ -22,7 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate replace to="/home" />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/Msgboard" element={<Msgboard />} />
           <Route path="/user" element={<Users />} />
           <Route path="/createuser" element={<CreateUser />} />
           <Route path="/login" element={<Login />} />

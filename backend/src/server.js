@@ -47,7 +47,7 @@ app.get('/home', function (req, res) {
     res.sendFile(path.join(frontendDir, 'index.html'));
 })
 
-app.get('/about', function (req, res) {
+app.get('/Msgboard', function (req, res) {
     res.sendFile(path.join(frontendDir, 'index.html'));
     // console.log("into about page")
 })

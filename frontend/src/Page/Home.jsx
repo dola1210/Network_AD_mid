@@ -14,7 +14,22 @@ const Home = () => {
       .catch(error => console.error(error));
   }, []);
 
-  return <div >{data}</div>;
+  return (
+    <div >
+      <h1 align="center">ADNS_Mid</h1>
+      <br></br>
+      <p align="center">R12921A09 胡丞佑</p>
+      <br></br>
+      <div>
+          <img src={`https://i.imgur.com/guRWsKZ.jpeg`} width="300"/>
+      </div>
+      <br></br>
+      
+      <p align="center">Hi! 我是丞佑，目前是台大電機資安碩士班的學生。</p>
+      <br></br>
+      <p align="center">請多指教！</p>
+    
+    </div>);
 }
 
 
