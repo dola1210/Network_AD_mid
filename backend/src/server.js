@@ -267,7 +267,7 @@ app.get('/api/msgs', function (req, res) {
     res.sendFile(path.join(__dirname, 'data.json'));
 });
 
-const id = env("cl_id"); // 填入 App 的 Client ID
+const id = '546c25a59c58ad7'; // 填入 App 的 Client ID
 const upload = multer({ storage: multer.memoryStorage() });
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     if (!req.file) {
@@ -297,9 +297,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
             }
         });
 
-        res.send({
-            message: 'Image uploaded to Imgur successfully!',
-        });
+        res.send(imgurResponse.data.data.link);
     } catch (error) {
         console.error('Failed to upload image to Imgur:', error);
         res.status(500).send('Failed to upload image to Imgur.');
@@ -308,7 +306,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
 
 const openai = new OpenAI({
-    apiKey: env("api_Key"),
+    apiKey: process.env.API_KEY,
 });
 app.post('/api/GenImg', async (req, res) => {
     if (!req.session.user) {

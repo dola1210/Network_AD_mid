@@ -29,6 +29,7 @@ const Users = () => {
         if (response.ok) {
             console.log('Image uploaded successfully');
             alert('上傳成功!');
+            setPhoto(response.text());
         } else {
             console.error('Upload failed');
         }
