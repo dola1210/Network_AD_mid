@@ -83,7 +83,7 @@ app.get('/logout', (req, res) => {
 
 app.get('/api/check', async function (req, res) {
     const userName = req.session.user;
-    console.log(userName);
+    // console.log(userName);
     if (req.session.user) {
         // res.send(userName);
         const user = await prisma.user.findUnique({
