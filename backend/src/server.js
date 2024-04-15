@@ -3,7 +3,9 @@ import session from "express-session";
 import cookieParser from "cookie-parser";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import bcrypt from "bcrypt";
 import fs from 'fs';
+import { prisma } from "./adapters.js";
 const port = process.env.PORT || 8000;
 const app = express();
 
@@ -50,14 +52,10 @@ app.get('/about', function (req, res) {
     // console.log("into about page")
 })
 
-app.get('/users', function (req, res) {
+app.get('/user', function (req, res) {
     res.sendFile(path.join(frontendDir, 'index.html'));
     // res.send('User page')
 })
-
-app.get('/api/users', function (req, res) {
-    res.sendFile(path.join(__dirname, 'data.json'));
-});
 
 app.get('/createuser', function (req, res) {
     res.sendFile(path.join(frontendDir, 'index.html'));
@@ -87,89 +85,132 @@ app.get('/api/check', function (req, res) {
 });
 
 app.use(express.json());
-const handleError = (err, res) => {
-    console.error(err);
-    if (!res.headersSent) {
-        res.status(500).json({ status: 'error', message: 'Internal server error' });
-    }
-};
+// const handleError = (err, res) => {
+//     console.error(err);
+//     if (!res.headersSent) {
+//         res.status(500).json({ status: 'error', message: 'Internal server error' });
+//     }
+// };
 
-app.post('/createuser', (req, res) => {
-    const filePath = path.join(__dirname, 'data.json');
-    const newData = req.body;
+// app.post('/createuser', (req, res) => {
+//     const filePath = path.join(__dirname, 'data.json');
+//     const newData = req.body;
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            if (err.code === 'ENOENT') {
-                fs.writeFile(filePath, JSON.stringify([newData]), err => {
-                    if (err) {
-                        handleError(err, res);
-                    } else {
-                        console.log('The file has been saved with initial data!');
-                        res.send('success');
-                    }
-                });
-            } else {
-                handleError(err, res);
-            }
-        } else {
-            const fileData = JSON.parse(data);
-            const result = fileData.find(item => item.name === newData.name);
-            if (result) {
-                console.log('Found:', result);  // 如果找到，输出该项
-                res.send('same');
-            } 
-            else {
-                fileData.push(newData);
-                fs.writeFile(filePath, JSON.stringify(fileData), err => {
-                    if (err) {
-                        handleError(err, res);
-                    } else {
-                        console.log(`${newData.name} register`);
-                        res.send('success');
-                    }
-                });
-            }
+//     fs.readFile(filePath, 'utf8', (err, data) => {
+//         if (err) {
+//             if (err.code === 'ENOENT') {
+//                 fs.writeFile(filePath, JSON.stringify([newData]), err => {
+//                     if (err) {
+//                         handleError(err, res);
+//                     } else {
+//                         console.log('The file has been saved with initial data!');
+//                         res.send('success');
+//                     }
+//                 });
+//             } else {
+//                 handleError(err, res);
+//             }
+//         } else {
+//             const fileData = JSON.parse(data);
+//             const result = fileData.find(item => item.name === newData.name);
+//             if (result) {
+//                 console.log('Found:', result);  // 如果找到，输出该项
+//                 res.send('same');
+//             } 
+//             else {
+//                 fileData.push(newData);
+//                 fs.writeFile(filePath, JSON.stringify(fileData), err => {
+//                     if (err) {
+//                         handleError(err, res);
+//                     } else {
+//                         console.log(`${newData.name} register`);
+//                         res.send('success');
+//                     }
+//                 });
+//             }
             
-        }
-    });
-});
+//         }
+//     });
+// });
 
 // app.use(cookieParser());
 
-app.post('/login', (req, res) => {
+// app.post('/login', (req, res) => {
+    
+//     const logData = req.body;
+//     console.log('log:', logData)
+
+//     const filePath = path.join(__dirname, 'data.json');
+//     fs.readFile(filePath, 'utf8', (err, data) => {
+//         if (err) {
+//             res.send('loginfai');
+//         }
+//         else {
+//             const fileData = JSON.parse(data);
+//             const result = fileData.find(item => item.name === logData.name);
+//             if (result) {
+//                 console.log('res:', result);  // 如果找到，输出该项
+//                 if(result.pwd === logData.pwd){
+//                     req.session.user = logData.name;
+//                     res.send('loginsus');
+//                 }
+//                 else
+//                     res.send('loginfai');
+//             } 
+//             else {
+//                 res.send('loginfai');
+//             }
+//         }
+//     });
+  
+//   })
+
+app.post('/createuser2', async (req, res) => {
+    console.log('logggg:', req.body)
+    
+    try {
+        const user = await prisma.user.create({ data: { name: req.body.name, pwd: bcrypt.hashSync(req.body.pwd, 13)} });
+        return res.send('success');
+    } catch (error) {
+        console.error('Error create user');
+        return res.send('fail');
+    }
+    
+})
+
+app.post('/login2', async (req, res) => {
     
     const logData = req.body;
     console.log('log:', logData)
-
-    const filePath = path.join(__dirname, 'data.json');
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            res.send('loginfai');
-        }
-        else {
-            const fileData = JSON.parse(data);
-            const result = fileData.find(item => item.name === logData.name);
-            if (result) {
-                console.log('res:', result);  // 如果找到，输出该项
-                if(result.pwd === logData.pwd){
-                    req.session.user = logData.name;
-                    res.send('loginsus');
-                }
-                else
-                    res.send('loginfai');
-            } 
-            else {
-                res.send('loginfai');
+    try {
+        const user = await prisma.user.findUnique({
+          where: {
+            name: logData.name,
+          },
+        });
+        
+        if(user){
+            if(bcrypt.compareSync(logData.pwd, user.pwd)){
+                req.session.user = logData.name;
+                res.send('loginsus');
             }
-        }
-    });
-  
-  })
-
+            else
+                res.send('loginfai');
+        }    
+        else
+            res.send('loginfai');
+        // return user;
+    } catch (error) {
+        console.error('Error login user');
+    }
+})
 
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
+});
+
+process.on("exit", async () => {
+    await prisma.$disconnect();
 });
 

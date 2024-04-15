@@ -5,16 +5,20 @@ const Users = () => {
   const [data, setData] = useState('');
   useEffect(() => {
     fetchData()
-      .then(dataString => setData(dataString))
+    .then(dataString => {
+      if(dataString === '')
+        setData('not log in')
+      else
+        setData(dataString)
+    })
       .catch(error => console.error(error));
   }, []);
 
   return <div >Current User: {data}</div>;
 }
 
-
 function fetchData() {
-  return fetch('/api/users')
+  return fetch('/api/check')
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -26,8 +30,6 @@ function fetchData() {
       throw error;
     });
 }
-
-
 
 
 export default Users;

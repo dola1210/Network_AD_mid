@@ -18,16 +18,10 @@ const CreateUser = () => {
     if (inputName != "" & inputPwd != "") {
       sendData(inputName, inputPwd)
         .then(dataString => {
-          if(dataString === 'same'){
-            setMessage(`此帳號已存在`)
-          }
-          else if(dataString === 'success'){
-            setMessage(`${inputName} 註冊成功！`)
-            setinputName('');
-            setinputPwd('');
-          }
-          else 
-            setMessage(`註冊失敗！`)
+          if(dataString==='success')
+            setMessage(`${inputName} 註冊成功！`);
+          else
+            setMessage(`註冊失敗！`);
         })
         .catch(error => console.error(error));
     }
@@ -68,7 +62,7 @@ function sendData(data1, data2) {
     name: data1,
     pwd: data2
   };
-  return fetch('/createuser', {
+  return fetch('/createuser2', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

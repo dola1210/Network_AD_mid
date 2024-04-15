@@ -68,7 +68,7 @@ function sendData(data1, data2) {
     name: data1,
     pwd: data2
   };
-  return fetch('/login', {
+  return fetch('/login2', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
